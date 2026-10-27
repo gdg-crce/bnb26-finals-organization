@@ -1,0 +1,163 @@
+16:54:34 == teams  ORG=BnB-26-Final-Round dry=1 teams=52 members=0
+16:54:34 DRY  PATCH orgs/BnB-26-Final-Round {"default_repository_permission":"none","members_can_create_repositories":false,"members_can_fork_private_repositories":false}
+16:54:34 org settings: base permission none, no repo creation, no private forks
+16:54:34 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"bnb-council","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:34   team created: bnb-council
+16:54:34 [1/52] Onlydevfans -> Onlydevfans_Final-Round
+16:54:34 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Onlydevfans","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:34   team created: Onlydevfans
+16:54:34 [2/52] Anvaya -> Anvaya_Final-Round
+16:54:34 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Anvaya","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Anvaya
+16:54:35 [3/52] Beyond Binary -> Beyond-Binary_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Beyond Binary","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Beyond Binary
+16:54:35 [4/52] Visionaries -> Visionaries_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Visionaries","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Visionaries
+16:54:35 [5/52] Chasma cube -> Chasma-cube_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Chasma cube","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Chasma cube
+16:54:35 [6/52] Shellshock -> Shellshock_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Shellshock","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Shellshock
+16:54:35 [7/52] Pookieblinders -> Pookieblinders_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Pookieblinders","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Pookieblinders
+16:54:35 [8/52] Deploy for good -> Deploy-for-good_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Deploy for good","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Deploy for good
+16:54:35 [9/52] Megabyte -> Megabyte_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Megabyte","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Megabyte
+16:54:35 [10/52] Jamy labs -> Jamy-labs_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Jamy labs","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Jamy labs
+16:54:35 [11/52] Half_a_byte -> Half_a_byte_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Half_a_byte","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Half_a_byte
+16:54:35 [12/52] Shift+Elite -> Shift-Elite_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Shift+Elite","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Shift+Elite
+16:54:35 [13/52] Recursion -> Recursion_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Recursion","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Recursion
+16:54:35 [14/52] The Iterators -> The-Iterators_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"The Iterators","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: The Iterators
+16:54:35 [15/52] Epsilon Closure -> Epsilon-Closure_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Epsilon Closure","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Epsilon Closure
+16:54:35 [16/52] Apexcode -> Apexcode_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Apexcode","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Apexcode
+16:54:35 [17/52] ViSiON-QUEST -> ViSiON-QUEST_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"ViSiON-QUEST","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: ViSiON-QUEST
+16:54:35 [18/52] Team4i -> Team4i_Final-Round
+16:54:35 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Team4i","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:35   team created: Team4i
+16:54:36 [19/52] CodeCrusaders -> CodeCrusaders_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"CodeCrusaders","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: CodeCrusaders
+16:54:36 [20/52] Insomnia -> Insomnia_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Insomnia","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Insomnia
+16:54:36 [21/52] Dream67 -> Dream67_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Dream67","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Dream67
+16:54:36 [22/52] Mac and Code -> Mac-and-Code_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Mac and Code","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Mac and Code
+16:54:36 [23/52] Enigma -> Enigma_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Enigma","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Enigma
+16:54:36 [24/52] Team Pony -> Team-Pony_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Team Pony","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Team Pony
+16:54:36 [25/52] Claude's Angels -> Claude-s-Angels_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Claude's Angels","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Claude's Angels
+16:54:36 [26/52] Skill Issue -> Skill-Issue_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Skill Issue","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Skill Issue
+16:54:36 [27/52] Karatsuba -> Karatsuba_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Karatsuba","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Karatsuba
+16:54:36 [28/52] Team Loondry -> Team-Loondry_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Team Loondry","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Team Loondry
+16:54:36 [29/52] Thanda Paani -> Thanda-Paani_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Thanda Paani","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Thanda Paani
+16:54:36 [30/52] Flash256 -> Flash256_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Flash256","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Flash256
+16:54:36 [31/52] welarp -> welarp_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"welarp","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: welarp
+16:54:36 [32/52] overclocked -> overclocked_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"overclocked","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: overclocked
+16:54:36 [33/52] Team Revan -> Team-Revan_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Team Revan","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Team Revan
+16:54:36 [34/52] Ghee Khatam -> Ghee-Khatam_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Ghee Khatam","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:36   team created: Ghee Khatam
+16:54:36 [35/52] d m e n s y a -> d-m-e-n-s-y-a_Final-Round
+16:54:36 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"d m e n s y a","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: d m e n s y a
+16:54:37 [36/52] Build & Break -> Build-Break_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Build & Break","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Build & Break
+16:54:37 [37/52] Alpha -> Alpha_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Alpha","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Alpha
+16:54:37 [38/52] Cybar Mates -> Cybar-Mates_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Cybar Mates","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Cybar Mates
+16:54:37 [39/52] Tech Titans -> Tech-Titans_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Tech Titans","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Tech Titans
+16:54:37 [40/52] Team Convergent -> Team-Convergent_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Team Convergent","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Team Convergent
+16:54:37 [41/52] Mavens -> Mavens_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Mavens","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Mavens
+16:54:37 [42/52] Diamonds -> Diamonds_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Diamonds","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Diamonds
+16:54:37 [43/52] Cookies -> Cookies_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Cookies","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Cookies
+16:54:37 [44/52] Build N Pray -> Build-N-Pray_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Build N Pray","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Build N Pray
+16:54:37 [45/52] Bumblebee -> Bumblebee_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Bumblebee","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Bumblebee
+16:54:37 [46/52] 404 - Jackpot -> 404-Jackpot_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"404 - Jackpot","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: 404 - Jackpot
+16:54:37 [47/52] Quadcore -> Quadcore_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Quadcore","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Quadcore
+16:54:37 [48/52] Notfound -> Notfound_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Notfound","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Notfound
+16:54:37 [49/52] Gdg PCCE -> Gdg-PCCE_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Gdg PCCE","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Gdg PCCE
+16:54:37 [50/52] Team Mayhem -> Team-Mayhem_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Team Mayhem","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:37   team created: Team Mayhem
+16:54:37 [51/52] Northh.Space -> Northh-Space_Final-Round
+16:54:37 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Northh.Space","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:38   team created: Northh.Space
+16:54:38 [52/52] Pioneers -> Pioneers_Final-Round
+16:54:38 DRY  POST orgs/BnB-26-Final-Round/teams {"name":"Pioneers","privacy":"secret","notification_setting":"notifications_disabled"}
+16:54:38   team created: Pioneers
+16:54:38 == done (teams). teams=52 failed=0
+16:54:38 files: ./out-BnB-26-Final-Round/repos.tsv  ./out-BnB-26-Final-Round/invites.tsv  log: ./out-BnB-26-Final-Round/run-20261027-165430.log
