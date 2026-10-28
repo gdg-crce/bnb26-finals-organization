@@ -6,6 +6,7 @@
 #   ./bnb26.sh repos   [--dry-run] 1 private repo per team, seeded README + .gitignore (baseline commit for monitor)
 #   ./bnb26.sh access  [--dry-run] team -> its own repo (push), council team -> every repo (COUNCIL_PERM)
 #   ./bnb26.sh members [--dry-run] add people by GitHub username (needs github_username in the CSV; sends org invites)
+#   ./bnb26.sh council [--dry-run] add ONLY the council members (COUNCIL / council.txt) to the org + the council team (COUNCIL_TEAM)
 #   ./bnb26.sh setup   [--dry-run] teams + repos + access + members in one go, per team
 #   ./bnb26.sh status             live view per team: team/repo/access ok? who accepted, who is pending, missing or expired
 #   ./bnb26.sh audit              verify settings, visibility, team->repo access, council access, per-team member state
@@ -14,6 +15,11 @@
 #
 # Config (env vars, defaults in brackets):
 #   ORG [BnB-26-Final-Round]   CSV [teams.csv]  (columns: team_name[,github_username,full_name,role])
+#   MEMBERS_CSV [none]         form responses (file or https URL, e.g. the published Google Sheet csv): usernames per team.
+#                              Teams are matched to the finalist list in CSV by name (or its registered_name column); a team
+#                              submitted twice = latest wins; a form team that matches nothing stops the run.
+#   ONLY [all]                 limit the run to these teams, comma separated, e.g. ONLY="Insomnia,Mac and Code"
+#   SKIP_USERS [none]          usernames to leave out, comma separated (their team mates are still added)
 #   COUNCIL ["" ]              comma separated GitHub usernames, e.g. "user1,user2,user3"
 #   COUNCIL_PERM [pull]        pull | triage | push | maintain | admin
 #   REPO_SUFFIX [_Final-Round] repo name = <TeamName>_Final-Round
@@ -29,7 +35,9 @@
 set -uo pipefail
 
 ORG="${ORG:-BnB-26-Final-Round}"
-CSV="${CSV:-teams.csv}"
+CSV="${CSV:-teams.csv}"   # file or https URL
+MEMBERS_CSV="${MEMBERS_CSV:-}"
+ONLY="${ONLY:-}"
 COUNCIL="${COUNCIL:-$(grep -v '^#' council.txt 2>/dev/null | tr -s ' \n' ',' | sed 's/,$//')}"   # default: council.txt, one username per line
 COUNCIL_PERM="${COUNCIL_PERM:-pull}"
 REPO_SUFFIX="${REPO_SUFFIX:-_Final-Round}"
@@ -38,7 +46,7 @@ MAX_PER_TEAM="${MAX_PER_TEAM:-4}"
 INVITE_CAP="${INVITE_CAP:-0}"
 SLEEP="${SLEEP:-3}"
 OUT="${OUT:-./out-${ORG}}"
-COUNCIL_TEAM="bnb-council"
+COUNCIL_TEAM="${COUNCIL_TEAM:-GDG CRCE}"   # team name; its slug is looked up, never assumed
 
 CMD="${1:-help}"; shift || true
 DRY=0
@@ -98,18 +106,30 @@ ev() { [ "$DRY" = 1 ] || printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$(date -Is)" "$STEPS
 
 errmsg() { printf '%s' "$1" | jq -r '.message // empty' 2>/dev/null | head -c 160 || true; }
 
+# local path for a file or an https URL (downloaded into $OUT)
+fetch_src() {  # value name
+  case "$1" in
+    http://*|https://*) curl -fsSL --max-time 60 -o "$OUT/$2" "$1" || die "could not download $2"; log "downloaded $2 ($(wc -c < "$OUT/$2") bytes)"; printf '%s' "$OUT/$2";;
+    *) printf '%s' "$1";;
+  esac
+}
+
 # ---------- CSV -> members.tsv (team \t github_username \t repo) ----------
 load_csv() {
-  [ -f "$CSV" ] || die "CSV not found: $CSV"
-  python3 -I - "$CSV" "$REPO_SUFFIX" "$MAX_PER_TEAM" "$COUNCIL_TEAM" > "$OUT/members.tsv" <<'PY'
+  local csv_local mem_local=""
+  csv_local=$(fetch_src "$CSV" fetched-teams.csv) || exit 1
+  [ -f "$csv_local" ] || die "CSV not found: $CSV"
+  if [ -n "$MEMBERS_CSV" ]; then mem_local=$(fetch_src "$MEMBERS_CSV" fetched-members.csv) || exit 1; [ -f "$mem_local" ] || die "MEMBERS_CSV not found: $MEMBERS_CSV"; fi
+  python3 -I - "$csv_local" "$REPO_SUFFIX" "$MAX_PER_TEAM" "$COUNCIL_TEAM" "$mem_local" "${ONLY:-}" > "$OUT/members.tsv" <<'PY'
 import csv, re, sys
-path, suffix, maxn, reserved = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
+path, suffix, maxn, reserved, members_path, only = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5], sys.argv[6]
 rd = csv.reader(open(path, encoding="utf-8-sig", newline=""))
 rows = [(rd.line_num, r) for r in rd if any(c.strip() for c in r)]
 if not rows: sys.exit("CSV is empty")
 hdr = [c.strip().lower().replace(" ", "_") for c in rows[0][1]]
 ti = next((i for i, h in enumerate(hdr) if h in ("team", "team_name")), None)
 ui = next((i for i, h in enumerate(hdr) if h in ("github_username", "username", "github")), None)
+ai = next((i for i, h in enumerate(hdr) if h in ("registered_name", "alias")), None)
 if ti is None:
     sys.exit("header must have a team_name column, got: %s" % hdr)
 GH = re.compile(r"[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?")
@@ -122,13 +142,50 @@ for ln, r in rows[1:]:
         errs.append("line %d: bad GitHub username %r (username only, no @, no link)" % (ln, user)); continue
     key, ukey = team.casefold(), user.casefold()
     if key == reserved.casefold(): errs.append("line %d: team name %r is reserved" % (ln, team)); continue
-    t = teams.setdefault(key, {"name": team, "users": []})
+    t = teams.setdefault(key, {"name": team, "users": [], "alias": set()})
     if t["name"] != team: errs.append("line %d: team %r also written as %r" % (ln, team, t["name"]))
+    if ai is not None and ai < len(r):
+        for a in r[ai].split("|"):
+            if a.strip(): t["alias"].add(re.sub(r"\s+", " ", a).strip())
     if not user: continue
     if ukey in user_team and user_team[ukey] != key:
         errs.append("line %d: %s is in two teams (%s, %s)" % (ln, user, teams[user_team[ukey]]["name"], team)); continue
     user_team[ukey] = key
     if ukey not in [u.casefold() for u in t["users"]]: t["users"].append(user)
+if members_path:   # form responses: one row per team, "<role> - GitHub username" columns
+    mr = list(csv.reader(open(members_path, encoding="utf-8-sig", newline="")))
+    mh = [c.strip() for c in mr[0]] if mr else []
+    mt = next((i for i, h in enumerate(mh) if h.lower() in ("team name", "team", "team_name")), None)
+    gcols = [i for i, h in enumerate(mh) if re.fullmatch(r".*github username", h, re.I)]
+    if mt is None or not gcols: sys.exit("MEMBERS_CSV needs a 'Team name' column and '<role> - GitHub username' columns, got: %s" % mh)
+    norm = lambda x: re.sub(r"[^a-z0-9]", "", x.casefold())
+    index = {}
+    for key, t in teams.items():
+        index[norm(t["name"])] = key
+        for a in t["alias"]: index.setdefault(norm(a), key)
+    latest = {}
+    for n, r in enumerate(mr[1:], start=2):
+        name = re.sub(r"\s+", " ", r[mt]).strip() if mt < len(r) else ""
+        if not name: continue
+        key = index.get(norm(name))
+        if key is None:
+            if only: sys.stderr.write("WARN: form row %d: team %r matches no finalist team, skipped (ONLY is set)\n" % (n, name))
+            else: errs.append("form row %d: team %r matches no finalist team (fix the sheet or add registered_name)" % (n, name))
+            continue
+        if key in latest: sys.stderr.write("WARN: team %r submitted again (form row %d), using the latest\n" % (teams[key]["name"], n))
+        latest[key] = r
+    for key, r in latest.items():
+        t = teams[key]
+        for gi in gcols:
+            user = r[gi].strip() if gi < len(r) else ""
+            if not user or user.upper() == "NA": continue
+            if not GH.fullmatch(user) or "--" in user:
+                errs.append("form team %r: bad GitHub username %r (username only, no @, no link)" % (t["name"], user)); continue
+            ukey = user.casefold()
+            if ukey in user_team and user_team[ukey] != key:
+                errs.append("form: %s is in two teams (%s, %s)" % (user, teams[user_team[ukey]]["name"], t["name"])); continue
+            user_team[ukey] = key
+            if ukey not in [u.casefold() for u in t["users"]]: t["users"].append(user)
 for key, t in teams.items():
     repo = re.sub(r"-+", "-", re.sub(r"[^A-Za-z0-9_-]+", "-", t["name"].replace("'", "").replace("’", ""))).strip("-") + suffix   # ' is dropped, other symbols become -
     if repo.startswith("-") or len(repo) > 100 or repo.strip("-_") == suffix.strip("-_"):
@@ -141,9 +198,20 @@ if errs:
     sys.stderr.write("\n".join("CSV ERROR: " + e for e in errs) + "\n"); sys.exit(1)
 for t in teams.values():
     for u in t["users"] or [""]: print("%s\t%s\t%s" % (t["name"], u, t["repo"]))
-sys.stderr.write("CSV ok: %d teams, %d members%s\n" % (len(teams), sum(len(t["users"]) for t in teams.values()), "" if ui is not None else " (no github_username column: teams/repos/access only)"))
+sys.stderr.write("CSV ok: %d teams, %d members, %d teams have no usernames yet\n" % (len(teams), sum(len(t["users"]) for t in teams.values()), sum(1 for t in teams.values() if not t["users"])))
 PY
   [ "${PIPESTATUS[0]}" = 0 ] || die "CSV validation failed (see above)"
+  if [ -n "${SKIP_USERS:-}" ]; then   # leave these usernames out (e.g. a typo waiting for a fix); the rest of their team is still added
+    awk -F'\t' -v skip="$SKIP_USERS" 'BEGIN{n=split(tolower(skip),a,",");for(i=1;i<=n;i++){gsub(/^ +| +$/,"",a[i]);s[a[i]]=1}} !($2!="" && (tolower($2) in s))' "$OUT/members.tsv" > "$OUT/members.tsv.tmp" && mv "$OUT/members.tsv.tmp" "$OUT/members.tsv"
+    log "SKIP_USERS: left out $(tr ',' '\n' <<<"$SKIP_USERS" | wc -l) username(s)"
+  fi
+  if [ -n "${ONLY:-}" ]; then   # work on the listed teams only (names as in teams.csv, comma separated)
+    local o; while IFS= read -r o; do
+      [ -n "$o" ] && { team_names | grep -qixF "$o" || die "ONLY: no such team '$o'"; }
+    done < <(tr ',' '\n' <<<"$ONLY" | sed 's/^ *//; s/ *$//')
+    awk -F'\t' -v only="$ONLY" 'BEGIN{n=split(tolower(only),a,",");for(i=1;i<=n;i++){gsub(/^ +| +$/,"",a[i]);s[a[i]]=1}} s[tolower($1)]' "$OUT/members.tsv" > "$OUT/members.tsv.tmp" && mv "$OUT/members.tsv.tmp" "$OUT/members.tsv"
+    log "ONLY: limited to $(team_names | wc -l) team(s): $ONLY"
+  fi
 }
 team_names() { cut -f1 "$OUT/members.tsv" | awk '!s[$0]++'; }
 users_of()   { awk -F'\t' -v t="$1" '$1==t && $2!=""{print $2}' "$OUT/members.tsv"; }
@@ -320,8 +388,11 @@ team_result() {  # one RESULT line per team, from the per-team state kept by cmd
 cmd_run() {  # $1 = steps, any of: teams repos access members
   STEPS=$1
   preflight
-  if has members; then
-    awk -F'\t' '$2!=""{f=1} END{exit !f}' "$OUT/members.tsv" || die "no GitHub usernames in $CSV: the members step needs a github_username column"
+  if has members || has council; then
+    if ! awk -F'\t' '$2!=""{f=1} END{exit !f}' "$OUT/members.tsv"; then
+      { has members && [ -z "$COUNCIL" ]; } && die "no GitHub usernames: set MEMBERS_CSV (form responses) or use a CSV with github_username"
+      log "no participant usernames yet: adding the council only"
+    fi
     check_users
   fi
   local total n=0 t repo r slug tid base cs="" cid u ts acs pre bad
@@ -338,7 +409,7 @@ cmd_run() {  # $1 = steps, any of: teams repos access members
     if has teams; then r=$(ensure_team "$COUNCIL_TEAM") || die "could not create council team"; else r=$(team_slug "$COUNCIL_TEAM"); fi
     if [ -z "$r" ]; then [ "$DRY" = 1 ] && r=$'dry-run\t0' || die "council team missing: run './bnb26.sh teams' first"; fi
     IFS=$'\t' read -r cs cid <<<"$r"
-    if has members; then
+    if has members || has council; then
       log "  council members:"
       for u in ${COUNCIL//,/ }; do add_member "$COUNCIL_TEAM" "$cs" "$u" maintainer; done
     fi
@@ -378,7 +449,7 @@ cmd_run() {  # $1 = steps, any of: teams repos access members
     fi
     team_result
     [ "$DRY" = 1 ] || sleep "$SLEEP"
-  done < <(team_names)
+  done < <([ "$STEPS" = council ] || team_names)
 
   log "== done ($STEPS). teams=$total failed=${#FAILS[@]}$(has members && echo " | new org invites=$INV_SENT skipped=$INV_SKIP failed=$INV_FAIL")"
   if [ "${#FAILS[@]}" -gt 0 ]; then log "failed steps:"; printf '   %s\n' "${FAILS[@]}" | tee -a "$LOG" >&2; fi
@@ -431,7 +502,7 @@ cmd_status() {  # live view: what exists on GitHub right now and who has accepte
         pt=$(jq -r --arg s "$slug" '.[]|select(.slug==$s)|.permission' <<<"$rt")
         [ "$pt" = push ] || prob="${prob:+$prob, }team access '${pt:-none}'"
         if [ -n "$COUNCIL" ]; then
-          pc=$(jq -r --arg s "$COUNCIL_TEAM" '.[]|select(.slug==$s)|.permission' <<<"$rt")
+          pc=$(jq -r --arg s "$(team_slug "$COUNCIL_TEAM" | cut -f1)" '.[]|select(.slug==$s)|.permission' <<<"$rt")
           [ "$pc" = "$COUNCIL_PERM" ] || prob="${prob:+$prob, }council access '${pc:-none}'"
         fi
       fi
@@ -490,7 +561,7 @@ cmd_audit() {
     rt=$(get "repos/$ORG/$repo/teams")
     nt=$(jq 'length' <<<"$rt")
     pt=$(jq -r --arg s "$slug" '.[]|select(.slug==$s)|.permission' <<<"$rt")
-    pc=$(jq -r --arg s "bnb-council" '.[]|select(.slug==$s)|.permission' <<<"$rt")
+    pc=$(jq -r --arg s "$(awk -F'\t' -v n="$COUNCIL_TEAM" 'tolower($1)==tolower(n){print $2; exit}' "$OUT/teams.cache")" '.[]|select(.slug==$s)|.permission' <<<"$rt")
     direct=$(get "repos/$ORG/$repo/collaborators?affiliation=direct&per_page=100" | jq 'length')
     act=0; pend=0; miss=0
     while IFS= read -r u; do
@@ -557,10 +628,11 @@ case "$CMD" in
   repos)   cmd_run "repos" ;;
   access)  cmd_run "access" ;;
   members) cmd_run "members" ;;
+  council) cmd_run "council" ;;
   setup)   cmd_run "teams repos access members" ;;
   status)  cmd_status ;;
   audit)   cmd_audit ;;
   monitor) cmd_monitor ;;
   cleanup) cmd_cleanup ;;
-  *) sed -n '2,27p' "$0" ;;
+  *) sed -n '2,33p' "$0" ;;
 esac

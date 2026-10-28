@@ -1,0 +1,18 @@
+# script output: logs, caches, audit/status tables, participant usernames (see OUT in bnb26.sh)
+out-*/
+*.log
+*.cache
+
+# backups and scratch
+*.bak
+*.bak*
+*.tmp
+
+# secrets: the GH_TOKEN must never be in the repo
+.env
+.env.*
+*.token
+
+# editor / OS
+.DS_Store
+node_modules/

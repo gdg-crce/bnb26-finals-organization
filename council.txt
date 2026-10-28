@@ -1,9 +1,4 @@
 # council GitHub usernames, one per line
-SohamPadalkar
-Impala04
-Heetkankariya
-astincc20
-keishadsza
-tanishachary
-Manobhav-hub
-ShalomJm
+Xombi17
+mo171
+Abhishek-Jose7
